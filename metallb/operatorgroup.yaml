@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  annotations:
+    olm.providedAPIs: AddressPool.v1alpha1.metallb.io,MetalLB.v1beta1.metallb.io
+  generateName: metallb-
+  generation: 1
+  name: metallb
+spec:
+  targetNamespaces:
+    - metallb
