@@ -5,11 +5,11 @@ Simple example illustrating the use of MetalLB on OpenShift.
 * Infrastructure provider vSphere
 * MetalLB mode is layer2
 * Node machines are on 192.168.4.0/24
-* Address pool is defined as 192.168.4.224/29
+* [Address pool](metalllb/addresspool.yaml) is defined as 192.168.4.224/29
 
 # Deploy MetalLB
 
-* Install operator and create address pool resource
+Install operator and create address pool resource
 
 ```bash
 oc apply -k metallb
@@ -29,7 +29,9 @@ oc apply -k example-app
 
 ## Examine the results
 
-Notice the service has an External-IP and that the containers are using NodePorts
+Notice the service has a Cluster-IP and an External-IP from the AddressPool range.
+
+Also notice that the containers are using NodePorts.
 
 ```bash
 oc get svc -n metallb-app
@@ -51,6 +53,41 @@ $ oc get service/static -n metallb-app -o yaml | yq e '.spec.ports' -
 
 ![service-static.png](img/service-static.png)
 
+That means all nodes have that port open.
+
+```bash
+$ for node in $(oc get nodes -l node-role.kubernetes.io/worker -o name); do oc debug $node -- netstat -tupln |grep 30759; done
+Starting pod/hub-kmbtb-store-1-5cw2f-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      4141/openshift-sdn-
+
+Removing debug pod ...
+Starting pod/hub-kmbtb-store-2-kcj5d-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      4544/openshift-sdn-
+
+Removing debug pod ...
+Starting pod/hub-kmbtb-store-3-hkln5-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      3946/openshift-sdn-
+
+Removing debug pod ...
+Starting pod/hub-kmbtb-worker-l5hxw-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      3411/openshift-sdn-
+
+Removing debug pod ...
+Starting pod/hub-kmbtb-worker-p9pws-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      3255/openshift-sdn-
+
+Removing debug pod ...
+Starting pod/hub-kmbtb-worker-t6czb-debug ...
+To use host binaries, run `chroot /host`
+tcp        0      0 0.0.0.0:30759           0.0.0.0:*               LISTEN      3398/openshift-sdn-
+
+Removing debug pod ...
+```
 
 ```bash
 $ oc get pods -n metallb-app -o wide
@@ -63,10 +100,35 @@ NAME     ENDPOINTS                         AGE
 static   10.131.1.2:8080,10.131.1.2:8443   11m
 ```
 
-Access the app using the external IP on the service. Feel free to create and DNS A resource records you like pointing to 192.168.4.227.
+Access the app using the external IP on the service and the request will find an endpoint to respond. 
 
 ```bash
 $ curl 192.168.4.227:8080/app/
+<html>
+<head>
+<title>Static Web Site</title>
+</head>
+<body>
+<h1>Static Content</h1>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Random_static.gif" /></p>
+</body>
+</html>
+```
+
+# DNS
+
+Feel free to create DNS A resource records pointing to 192.168.4.227 for clients outside the OpenShift cluster.
+
+Remember that clients inside the cluster can take advantage of DNS service discovery.
+
+```bash
+oc run oc-client --labels="app=oc-client" --rm -i --tty --image openshift4/ose-cli -n metallb-app -- /bin/bash
+If you don't see a command prompt, try pressing enter.
+
+[root@oc-client /]# host static
+static.metallb-app.svc.cluster.local has address 172.30.74.176
+
+[root@oc-client /]# curl static:8080/app/
 <html>
 <head>
 <title>Static Web Site</title>
