@@ -1,8 +1,8 @@
-apiVersion: metallb.io/v1alpha1
-kind: AddressPool
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
 metadata:
   name: lab-192-168-4-224-b29
 spec:
-  protocol: layer2
+  autoAssign: true
   addresses:
     - 192.168.4.224-192.168.4.231
