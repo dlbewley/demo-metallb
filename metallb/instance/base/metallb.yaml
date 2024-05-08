@@ -1,3 +1,5 @@
+---
+# https://docs.openshift.com/container-platform/4.13/networking/metallb/metallb-operator-install.html#nw-metallb-operator-limit-speaker-to-nodes_metallb-operator-install
 apiVersion: metallb.io/v1beta1
 kind: MetalLB
 metadata:
