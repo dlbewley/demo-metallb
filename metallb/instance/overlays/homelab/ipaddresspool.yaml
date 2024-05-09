@@ -2,6 +2,8 @@ apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
   name: lab-192-168-4-224-b29
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   autoAssign: true
   addresses:

@@ -5,14 +5,20 @@ Simple example illustrating the use of MetalLB on OpenShift.
 * Infrastructure provider vSphere
 * MetalLB mode is layer2
 * Node machines are on 192.168.4.0/24
-* [Address pool](metallb/ipaddresspool.yaml) is defined as 192.168.4.224/29
+* [IP Address pool](instance/overlays/homelab/ipaddresspool.yaml) is defined as 192.168.4.224/29
 
 # Deploy MetalLB
+
+Install operator
+
+```bash
+oc apply -k operator
+```
 
 Install operator and create address pool resource
 
 ```bash
-oc apply -k metallb
+oc apply -k instance/overlays/homelab
 ```
 
 # Use MetalLB
