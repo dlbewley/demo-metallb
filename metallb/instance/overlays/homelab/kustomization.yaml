@@ -4,10 +4,6 @@ kind: Kustomization
 
 namespace: metallb-system
 
-bases:
-  - namespace.yaml
-  - operatorgroup.yaml
-  - subscription.yaml
-  - metallb.yaml
+resources:
+  - ../../base
   - ipaddresspool.yaml
-  - l2advertisement.yaml

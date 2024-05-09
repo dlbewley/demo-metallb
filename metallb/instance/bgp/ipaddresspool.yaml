@@ -1,0 +1,21 @@
+# ---
+# apiVersion: metallb.io/v1beta1
+# kind: AddressPool
+# metadata:
+#   name: lab-192-168-4-224-b29
+# spec:
+#   protocol: bgp
+#   autoAssign: false
+#   addresses:
+#     - 192.168.4.224-192.168.4.231
+
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: address-pool-bgp
+spec:
+  addresses:
+  - 192.168.4.224/28
+  autoAssign: true
+  protocol: bgp
