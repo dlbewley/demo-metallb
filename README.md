@@ -4,13 +4,15 @@ Simple example illustrating the use of MetalLB on OpenShift.
 
 # Deploy MetalLB
 
-* Install the operator
+* Install the operator as follows or create the ArgoCD Application [argo-olm.yaml](argo-olm.yaml)
 
 ```bash
 oc apply -k operator
 ```
 
 * [Configure](instance/base/metallb.yaml) the operator and [create an IP address pool](https://docs.openshift.com/container-platform/latest/networking/metallb/metallb-configure-address-pools.html)
+
+* Configure the operator as follows or create the ArgoCD Application [argo-cfg.yaml](argo-cfg.yaml) which uses the [homelab](instance/overlays/homelab) overlay.
 
 ```bash
 oc apply -k instance/overlays/homelab
