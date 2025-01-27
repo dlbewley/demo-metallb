@@ -5,5 +5,7 @@ kind: Kustomization
 namespace: metallb-system
 
 resources:
+  - role.yaml
+  - rolebinding.yaml
   - metallb.yaml
   - l2advertisement.yaml
