@@ -1,15 +1,17 @@
 # Demo MetalLB
 
-Simple example illustrating the use of MetalLB on OpenShift.
+Simple examples illustrating the use of [MetalLB](https://metallb.io/) on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift).
 
-* Infrastructure provider vSphere
-* MetalLB mode is layer2
-* Node machines are on 192.168.4.0/24
-* [Address pool](metalllb/addresspool.yaml) is defined as 192.168.4.224/29
+Examples of Layer2 and BGP are provided.
+
+> [!NOTE]
+> * Node machines are on 192.168.4.0/24
+> * MetalLB layer2 mode example [IP address pool](metalllb/instance/l2/ipaddresspool.yaml) is defined as 192.168.4.224/29
+> * MetalLB BGP mode example [IP address pool](metalllb/instance/bgp/ipaddresspool.yaml) is defined as 192.168.179.224/29
 
 # Deploy MetalLB
 
-* Install MetalLB operator 
+* Install the MetalLB operator 
 
 ```bash
 oc apply -k metallb/operator
