@@ -9,10 +9,32 @@ Simple example illustrating the use of MetalLB on OpenShift.
 
 # Deploy MetalLB
 
-Install operator and create address pool resource
+* Install MetalLB operator 
 
 ```bash
-oc apply -k metallb
+oc apply -k metallb/operator
+```
+
+* Enable MetalLB operator by creating an MetalLB instance
+
+```bash
+oc apply -k metallb/instance/base
+```
+
+## Enable Layer 2 Load Balancing
+
+* [Deploy](metallb/instance/l2) an ip address pool and layer 2 advertisment
+
+```bash
+oc apply -k metallb/instance/l2
+```
+
+## Enable Layer 3 Load Balancing via BGP
+
+* [Deploy](metallb/instance/bgp) an ip address pool and bgp advertistment along with supporting configuration
+
+```bash
+oc apply -k metallb/instance/bgp
 ```
 
 # Use MetalLB
