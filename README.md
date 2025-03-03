@@ -10,13 +10,13 @@ on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift)
 
 # Deploying MetalLB
 
-* Install the MetalLB operator 
+* [Install](metallb/operator/) the MetalLB operator 
 
 ```bash
 oc apply -k metallb/operator
 ```
 
-* Enable MetalLB operator by creating an MetalLB instance
+* [Enable](metallb/instance/base/) MetalLB operator by creating an MetalLB instance
 
 ```bash
 oc apply -k metallb/instance/base
@@ -41,6 +41,10 @@ BGP operates at layer 3. There is no need for nodes to have a presence on the su
 ```bash
 oc apply -k metallb/instance/bgp
 ```
+
+### BGP Demo
+
+[![asciicast](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP.svg)](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP)
 
 # Using MetalLB in an Application Service
 
