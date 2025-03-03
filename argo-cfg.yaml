@@ -1,0 +1,20 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb-config
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: 'https://github.com/dlbewley/demo-metallb'
+      targetRevision: HEAD
+      path: instance/overlays/homelab
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      allowEmpty: true
