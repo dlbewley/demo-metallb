@@ -1,15 +1,14 @@
 # Demo MetalLB
 
-Simple examples illustrating the use of [MetalLB](https://metallb.io/) on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift).
-
-Examples of Layer2 and BGP are provided.
+Simple examples illustrating the use of [MetalLB](https://metallb.io/) in Layer2 and BGP modes
+on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift).
 
 > [!NOTE]
 > * Node machines are on 192.168.4.0/24
-> * MetalLB layer2 mode example [IP address pool](metalllb/instance/l2/ipaddresspool.yaml) is defined as 192.168.4.224/29
-> * MetalLB BGP mode example [IP address pool](metalllb/instance/bgp/ipaddresspool.yaml) is defined as 192.168.179.224/29
+> * MetalLB layer2 mode example [IP address pool](metallb/instance/l2/ipaddresspool.yaml) is defined as 192.168.4.224/29
+> * MetalLB BGP mode example [IP address pool](metallb/instance/bgp/ipaddresspool.yaml) is defined as 192.168.179.224/29
 
-# Deploy MetalLB
+# Deploying MetalLB
 
 * Install the MetalLB operator 
 
@@ -23,15 +22,19 @@ oc apply -k metallb/operator
 oc apply -k metallb/instance/base
 ```
 
-## Enable Layer 2 Load Balancing
+## Enabling MetalLB Layer 2 Load Balancing
 
-* [Deploy](metallb/instance/l2) an ip address pool and layer 2 advertisment
+The nodes already have an IP address on the 192.168.4.0/24 network, and only on that network. To use layer2 mode the nodes must already have an ability to GARP and respond to ARPs for IP addresses being advertised. This is why we are using a small portion of IPs (192.168.4.224/29). Alternatively another VLAN interface could be created on each node.
+
+* [Deploy](metallb/instance/l2) an ip address pool from within the machine network, and define the layer 2 advertisment
 
 ```bash
 oc apply -k metallb/instance/l2
 ```
 
-## Enable Layer 3 Load Balancing via BGP
+## Enabling MetalLB Layer 3 Load Balancing via BGP
+
+BGP operates at layer 3. There is no need for nodes to have a presence on the subnet being advertised by BGP. In this case we will choose a made up subnet of 192.168.179.0/24 and select a subset of those IPs (192.168.179.224/29) for not particular reason.
 
 * [Deploy](metallb/instance/bgp) an ip address pool and bgp advertistment along with supporting configuration
 
@@ -39,7 +42,7 @@ oc apply -k metallb/instance/l2
 oc apply -k metallb/instance/bgp
 ```
 
-# Use MetalLB
+# Using MetalLB in an Application Service
 
 An example app was generated as follows plus [this patch](example-app/patch-service.yaml) to make it use MetalLB.
 
