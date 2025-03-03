@@ -11,4 +11,3 @@ spec:
   peerASN: 65001
   peerAddress: 192.168.4.1
   peerPort: 179
-  #  password: beegeeskeev
