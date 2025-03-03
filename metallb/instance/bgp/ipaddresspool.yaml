@@ -1,0 +1,16 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lab-192-168-179-224-b29
+  annotations:
+    description: "Unique, arbitrary IP range that is not otherwise configured in any way."
+spec:
+  addresses:
+    - 192.168.179.224-192.168.179.231
+  autoAssign: true
+  # ignore .0 and .255
+  avoidBuggyIPs: true 
+  # optional limitation on use of pool
+  serviceAllocation:
+    namespaces:
+      - metallb-app
