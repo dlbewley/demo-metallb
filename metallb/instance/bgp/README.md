@@ -164,3 +164,4 @@ IPs assigned from the address pool above will be advertised to our BGP peers as 
 
 * https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-16/irg-xe-16-book.html
 * https://metallb.io/configuration/_advanced_bgp_configuration/
+* https://www.redhat.com/en/blog/metallb-in-bgp-mode
