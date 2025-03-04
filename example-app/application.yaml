@@ -50,10 +50,10 @@ items:
       type: Source
     triggers:
     - github:
-        secret: 6gv4lMh2j3m_V3HHiUWd
+        secret: EXAMPLE
       type: GitHub
     - generic:
-        secret: bzZEQePKPxXedNadLpDE
+        secret: EXAMPLE
       type: Generic
     - type: ConfigChange
     - imageChange: {}
