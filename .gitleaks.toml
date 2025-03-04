@@ -1,0 +1,6 @@
+[allowlist]
+  description = "Global Allowlist"
+  paths = [
+    # Ignore generated trigger secrets in application
+    '''\/application\.yaml$'''
+  ]

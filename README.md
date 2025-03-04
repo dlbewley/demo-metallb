@@ -46,19 +46,35 @@ oc apply -k metallb/instance/bgp
 
 [![asciicast](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP.svg)](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP)
 
-# Using MetalLB in an Application Service
+# Using MetalLB with an Application Service
 
-An example app was generated as follows plus [this patch](example-app/patch-service.yaml) to make it use MetalLB.
-
-`oc new-app --name static nginx~https://github.com/dlbewley/static.git --dry-run -o yaml > application.yaml`
-
-Deploy the app.
+A sample app was created with using oc new-app and s2i.
 
 ```bash
-oc apply -k example-app
+oc new-app \
+  --name static \
+  nginx~https://github.com/dlbewley/static.git \
+  --dry-run -o yaml \
+  > example-app/base/application.yaml
 ```
 
-## Examine the results
+## Deploy App with MetalLB BGP Mode
+
+In this overlay [this patch](example-app/overlays/bgp/patch-service.yaml) ensures the type is LoadBalancer and the bgp IPAddressPool.
+
+```bash
+oc apply -k example-app/overlays/bgp
+```
+
+See full details [here](metallb/instance/bgp/README.md)
+
+## Deploy App with MetalLB Layer2 Mode
+
+In this overlay [this patch](example-app/overlays/layer2/patch-service.yaml) ensures the type is LoadBalancer and the layer2 IPAddressPool.
+
+```bash
+oc apply -k example-app/overlays/layer2
+```
 
 Notice the service has a Cluster-IP and an External-IP from the AddressPool range.
 
@@ -146,7 +162,7 @@ $ curl 192.168.4.227:8080/app/
 </html>
 ```
 
-# DNS
+# DNS Resolution of MetalLB Services
 
 Feel free to create DNS A resource records pointing to 192.168.4.227 for clients outside the OpenShift cluster.
 
