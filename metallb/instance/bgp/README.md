@@ -13,7 +13,7 @@
 * Define an IP [address pool](ipaddresspool.yaml). In my case I'm using 192.168.179.224/29 but we'll pretend it's all of 192.168.179.0/24.
 
 >[!NOTE]
-> This IP range is not in use on my nodes or anywhere in my network. I just made it up. BGP runs on TCP port 179 so I chose that for the third octet.
+> This IP range is not in use on my nodes or anywhere in my network. I just made it up. BGP runs on TCP port 179 so I chose that for the third octet. This range must NOT be within your machine network.
 
 ```yaml
 apiVersion: metallb.io/v1beta1
@@ -52,7 +52,7 @@ spec:
   #  password: xxxxEXAMPLE
 ```
 
-* Defing a [BGP Advertisement](bgpadvertisement.yaml) to begin announcing and IPs assigned from the address pool as being reachable via our cluster node IPs, more specifically our nodes running frr.
+* Define a [BGP Advertisement](bgpadvertisement.yaml) to begin announcing and IPs assigned from the address pool as being reachable via our cluster node IPs, more specifically our nodes running frr.
 
 ```bash
 $ oc get pods -l app=frr-k8s -n metallb-system -o wide
@@ -149,6 +149,7 @@ systemctl start frr
 ## Confirm Peer Relationship
 
 ```bash
+ssh root@unifi-router
 vtysh
 # any neighbor state that is not "Established" is less than successful
 sh ip bgp peer-group
