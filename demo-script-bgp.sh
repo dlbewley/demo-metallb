@@ -25,6 +25,7 @@ pei "oc apply -k $DEMO_ROOT/metallb/operator"
 p "# 🔧 enable MetalLB operator"
 pei "oc apply -k $DEMO_ROOT/metallb/instance/base"
 p
+# pei "oc wait pod -l  component=controller -n metallb-system --for=condition=Ready=true"
 
 p "# 📓 now we can create a configuration for BGP"
 p "#  first we need to identify our routing peer (${BGP_ROUTER}),"
