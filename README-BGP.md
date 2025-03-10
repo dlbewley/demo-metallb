@@ -6,14 +6,14 @@
 
 # Enable BGP in MetalLB
 
-* [Install MetalLB](../../operator/) operator
+* [Install MetalLB](operator/) operator
 
-*  Enable MetalLB by [creating a MetalLB](../base/) resource
+*  Enable MetalLB by [creating a MetalLB](instance/base/) resource
 
-* Define an IP [address pool](ipaddresspool.yaml). In my case I'm using 192.168.179.224/29 but we'll pretend it's all of 192.168.179.0/24.
+* Define an IP [address pool](instance/overlays/bgp/ipaddresspool.yaml). In my case I'm using 192.168.179.224/29 but we'll pretend it's all of 192.168.179.0/24.
 
 >[!NOTE]
-> This IP range is not in use on my nodes or anywhere in my network. I just made it up. BGP runs on TCP port 179 so I chose that for the third octet.
+> This IP range is not in use on my nodes or anywhere in my network. I just made it up. BGP runs on TCP port 179 so I chose that for the third octet. This range must NOT be within your machine network.
 
 ```yaml
 apiVersion: metallb.io/v1beta1
@@ -34,7 +34,7 @@ spec:
       - metallb-app
 ```
 
-* Define a [BGP Peer](bgppeer.yaml). This is a reference to your router running BGP which you want your cluster to peer with. We will use a Unifi Dream Machine and detail the setup below. Your BGPPeer will have settings appropriate to your network. For example the autonomous system number and IP addresses will differ at a minimum.
+* Define a [BGP Peer](instance/overlays/bgp/bgppeer.yaml). This is a reference to your router running BGP which you want your cluster to peer with. We will use a Unifi Dream Machine and detail the setup below. Your BGPPeer will have settings appropriate to your network. For example the autonomous system number and IP addresses will differ at a minimum.
 
 ```yaml
 apiVersion: metallb.io/v1beta2
@@ -52,7 +52,12 @@ spec:
   #  password: xxxxEXAMPLE
 ```
 
-* Defing a [BGP Advertisement](bgpadvertisement.yaml) to begin announcing and IPs assigned from the address pool as being reachable via our cluster node IPs, more specifically our nodes running frr.
+>[!IMPORTANT]
+> Dot ASN format (65008.30448) is not supported by FRR, convert to a plain 4 byte integer (4260394736).
+> See [asn-convert.py](asn-convert.py)
+
+
+* Define a [BGP Advertisement](instance/overlays/bgp/bgpadvertisement.yaml) to begin announcing and IPs assigned from the address pool as being reachable via our cluster node IPs, more specifically our nodes running frr.
 
 ```bash
 $ oc get pods -l app=frr-k8s -n metallb-system -o wide
@@ -95,7 +100,7 @@ route-map allow-ocp-hub permit 10
  match ip address prefix-list ocp-hub
 ```
 
-* Construct an [frr.conf](unifi-frr.conf) with this peer-group and other settings.
+* Construct an [frr.conf](instance/overlays/bgp/unifi-frr.conf) with this peer-group and other settings.
 
 * Place the frr.conf on the router at `/etc/frr/frr.conf`
 
@@ -149,6 +154,7 @@ systemctl start frr
 ## Confirm Peer Relationship
 
 ```bash
+ssh root@unifi-router
 vtysh
 # any neighbor state that is not "Established" is less than successful
 sh ip bgp peer-group
@@ -164,3 +170,4 @@ IPs assigned from the address pool above will be advertised to our BGP peers as 
 
 * https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/iproute_bgp/configuration/xe-16/irg-xe-16-book.html
 * https://metallb.io/configuration/_advanced_bgp_configuration/
+* https://www.redhat.com/en/blog/metallb-in-bgp-mode

@@ -2,6 +2,8 @@
 apiVersion: metallb.io/v1beta1
 kind: BGPAdvertisement
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   name: bgpadvertisement-1
   namespace: metallb-system
 spec:

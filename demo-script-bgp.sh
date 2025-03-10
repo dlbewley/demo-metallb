@@ -17,31 +17,32 @@ clear
 
 p "# 🔍 all the things"
 pei "git remote -v"
-pei tree -L 3 $DEMO_ROOT/metallb
+pei tree -L 3 $DEMO_ROOT
 p
 
 p "# 🔧 install MetalLB operator"
-pei "oc apply -k $DEMO_ROOT/metallb/operator"
+pei "oc apply -k $DEMO_ROOT/operator"
 p "# 🔧 enable MetalLB operator"
-pei "oc apply -k $DEMO_ROOT/metallb/instance/base"
+pei "oc apply -k $DEMO_ROOT/instance/base"
 p
+# pei "oc wait pod -l  component=controller -n metallb-system --for=condition=Ready=true"
 
 p "# 📓 now we can create a configuration for BGP"
 p "#  first we need to identify our routing peer (${BGP_ROUTER}),"
 p '#  our made up autonomous system number (65002), and our made up peer AS (65001)'
-pei "bat $DEMO_ROOT/metallb/instance/bgp/bgppeer.yaml"
+pei "bat $DEMO_ROOT/instance/overlays/bgp/bgppeer.yaml"
 p
 
 p '# 🔍 next we need to identify an IP Address Pool (192.168.179.224/29)'
-pei "bat $DEMO_ROOT/metallb/instance/bgp/ipaddresspool.yaml"
+pei "bat $DEMO_ROOT/instance/overlays/bgp/ipaddresspool.yaml"
 p
 
 p "# 🔍 finally we need to define a bgp advertisement for this IP range"
-pei "bat $DEMO_ROOT/metallb/instance/bgp/bgpadvertisement.yaml"
+pei "bat $DEMO_ROOT/instance/overlays/bgp/bgpadvertisement.yaml"
 p
 
 p "# 🔧 now apply these MetalLB BGP configs"
-pei "oc apply -k $DEMO_ROOT/metallb/instance/bgp"
+pei "oc apply -k $DEMO_ROOT/instance/overlays/bgp"
 p
 
 p "# ⌛ wait for FRR pods to come up..."
@@ -53,7 +54,7 @@ pei "oc get pods -l app=frr-k8s -n metallb-system -o jsonpath='{.items[*].status
 p
 
 p "# 🔍 here is the FRR config on the peer router"
-pei "bat -r 8: -l properties $DEMO_ROOT/metallb/instance/bgp/unifi-frr.cfg"
+pei "bat -r 8: -l properties $DEMO_ROOT/instance/overlays/bgp/unifi-frr.cfg"
 sleep 3
 p "# 🔍 the neighbor IPs of our cluster frr pods are placed in a 'ocp-hub' peer-group (line 20)"
 p "#  the 'allow-ocp-hub' route-map is applied to announcements from this peer-group (line 33)"
@@ -61,7 +62,7 @@ p "#  the route-map uses the 'ocp-hub' prefix list to ensure only relevant prefi
 p
 
 p "# 🚀 deploy an application to metallb-app namespace"
-pei "oc apply -k $DEMO_ROOT/example-app"
+pei "oc apply -k $DEMO_ROOT/example-app/overlays/bgp"
 p " 🔍 the app has a service of type loadbalancer"
 pei "oc kustomize $DEMO_ROOT/example-app | kfilt -k service | bat -l yaml"
 p

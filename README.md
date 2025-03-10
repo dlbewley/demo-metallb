@@ -5,60 +5,77 @@ on [OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift)
 
 > [!NOTE]
 > * Node machines are on 192.168.4.0/24
-> * MetalLB layer2 mode example [IP address pool](metallb/instance/l2/ipaddresspool.yaml) is defined as 192.168.4.224/29
-> * MetalLB BGP mode example [IP address pool](metallb/instance/bgp/ipaddresspool.yaml) is defined as 192.168.179.224/29
+> * MetalLB layer2 mode example [IP address pool](instance/l2/ipaddresspool.yaml) is defined as 192.168.4.224/29
+> * MetalLB BGP mode example [IP address pool](instance/bgp/ipaddresspool.yaml) is defined as 192.168.179.224/29
 
 # Deploying MetalLB
 
-* [Install](metallb/operator/) the MetalLB operator 
+* [Install](operator/) the MetalLB operator 
 
 ```bash
-oc apply -k metallb/operator
+oc apply -k operator
 ```
 
-* [Enable](metallb/instance/base/) MetalLB operator by creating an MetalLB instance
+* [Enable](instance/base/) MetalLB operator by creating an MetalLB instance
 
 ```bash
-oc apply -k metallb/instance/base
+oc apply -k instance/base
 ```
 
 ## Enabling MetalLB Layer 2 Load Balancing
 
 The nodes already have an IP address on the 192.168.4.0/24 network, and only on that network. To use layer2 mode the nodes must already have an ability to GARP and respond to ARPs for IP addresses being advertised. This is why we are using a small portion of IPs (192.168.4.224/29). Alternatively another VLAN interface could be created on each node.
 
-* [Deploy](metallb/instance/l2) an ip address pool from within the machine network, and define the layer 2 advertisment
+* [Deploy](instance/l2) an ip address pool from within the machine network, and define the layer 2 advertisment
 
 ```bash
-oc apply -k metallb/instance/l2
+oc apply -k instance/l2
 ```
 
 ## Enabling MetalLB Layer 3 Load Balancing via BGP
 
 BGP operates at layer 3. There is no need for nodes to have a presence on the subnet being advertised by BGP. In this case we will choose a made up subnet of 192.168.179.0/24 and select a subset of those IPs (192.168.179.224/29) for not particular reason.
 
-* [Deploy](metallb/instance/bgp) an ip address pool and bgp advertistment along with supporting configuration
+* [Deploy](instance/bgp) an ip address pool and bgp advertistment along with supporting configuration
 
 ```bash
-oc apply -k metallb/instance/bgp
+oc apply -k instance/bgp
 ```
 
 ### BGP Demo
 
 [![asciicast](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP.svg)](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP)
 
-# Using MetalLB in an Application Service
+# Using MetalLB with an Application Service
 
-An example app was generated as follows plus [this patch](example-app/patch-service.yaml) to make it use MetalLB.
-
-`oc new-app --name static nginx~https://github.com/dlbewley/static.git --dry-run -o yaml > application.yaml`
-
-Deploy the app.
+A sample app was created with using oc new-app and s2i.
 
 ```bash
-oc apply -k example-app
+oc new-app \
+  --name static \
+  nginx~https://github.com/dlbewley/static.git \
+  --dry-run -o yaml \
+  > example-app/base/application.yaml
 ```
 
-## Examine the results
+## Deploy App with MetalLB BGP Mode
+
+> [!TIP]
+> Until I get this cleaned up, see also [README-BGP.md](README-BGP.md)
+
+In this overlay [this patch](example-app/overlays/bgp/patch-service.yaml) ensures the type is LoadBalancer and the bgp IPAddressPool.
+
+```bash
+oc apply -k example-app/overlays/bgp
+```
+
+## Deploy App with MetalLB Layer2 Mode
+
+In this overlay [this patch](example-app/overlays/layer2/patch-service.yaml) ensures the type is LoadBalancer and the layer2 IPAddressPool.
+
+```bash
+oc apply -k example-app/overlays/layer2
+```
 
 Notice the service has a Cluster-IP and an External-IP from the AddressPool range.
 
@@ -146,7 +163,7 @@ $ curl 192.168.4.227:8080/app/
 </html>
 ```
 
-# DNS
+# DNS Resolution of MetalLB Services
 
 Feel free to create DNS A resource records pointing to 192.168.4.227 for clients outside the OpenShift cluster.
 
