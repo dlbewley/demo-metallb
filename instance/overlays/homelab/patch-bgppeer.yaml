@@ -1,0 +1,11 @@
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: bgp-peer-udmpro
+  namespace: metallb-system
+
+spec:
+  myASN: 65002
+  peerASN: 65001
+  peerAddress: 192.168.4.1

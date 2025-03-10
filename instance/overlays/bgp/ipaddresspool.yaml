@@ -11,6 +11,6 @@ spec:
   # ignore .0 and .255
   avoidBuggyIPs: true 
   # optional limitation on use of pool
-  serviceAllocation:
-    namespaces:
-      - metallb-app
+  #serviceAllocation:
+  #  namespaces:
+  #    - metallb-app

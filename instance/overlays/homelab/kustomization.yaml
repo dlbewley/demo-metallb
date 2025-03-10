@@ -6,4 +6,7 @@ namespace: metallb-system
 
 resources:
   - ../../base
-  - ipaddresspool.yaml
+  - ../bgp
+
+patches:
+  - path: patch-bgppeer.yaml
