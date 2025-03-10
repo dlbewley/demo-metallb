@@ -60,6 +60,9 @@ oc new-app \
 
 ## Deploy App with MetalLB BGP Mode
 
+> [!TIP]
+> Until I get this cleaned up, see also [README-BGP.md](README-BGP.md)
+
 In this overlay [this patch](example-app/overlays/bgp/patch-service.yaml) ensures the type is LoadBalancer and the bgp IPAddressPool.
 
 ```bash
