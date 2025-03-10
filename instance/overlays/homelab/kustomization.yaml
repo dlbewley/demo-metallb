@@ -7,6 +7,7 @@ namespace: metallb-system
 resources:
   - ../../base
   - ../bgp
+  - ../l2
 
 patches:
   - path: patch-bgppeer.yaml
