@@ -8,7 +8,7 @@
 
 * [Install MetalLB](operator/) operator
 
-*  Enable MetalLB by [creating a MetalLB](base/) resource
+*  Enable MetalLB by [creating a MetalLB](instance/base/) resource
 
 * Define an IP [address pool](instance/overlays/bgp/ipaddresspool.yaml). In my case I'm using 192.168.179.224/29 but we'll pretend it's all of 192.168.179.0/24.
 
@@ -53,10 +53,7 @@ spec:
 ```
 
 >[!IMPORTANT]
-> dot ASN format is not supported by FRR, convert to plain 4 byte integer
->  # !ASPlain for 65008.30448 is 4260394736
->  #myASN: 65008.30448
->  #myASN: 4260394736
+> Dot ASN format (65008.30448) is not supported by FRR, convert to a plain 4 byte integer (4260394736).
 > See [asn-convert.py](asn-convert.py)
 
 
