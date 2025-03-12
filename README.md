@@ -44,7 +44,7 @@ oc apply -k instance/bgp
 
 ### BGP Demo
 
-[![asciicast](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP.svg)](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP)
+[![asciicast](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim.svg)](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim)
 
 # Using MetalLB with an Application Service
 

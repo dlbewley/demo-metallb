@@ -17,7 +17,7 @@ clear
 
 p "# 🔍 all the things"
 pei "git remote -v"
-pei tree -L 3 $DEMO_ROOT
+pei tree -L 3 $DEMO_ROOT/instance
 p
 
 p "# 🔧 install MetalLB operator"
@@ -29,7 +29,8 @@ p
 
 p "# 📓 now we can create a configuration for BGP"
 p "#  first we need to identify our routing peer (${BGP_ROUTER}),"
-p '#  our made up autonomous system number (65002), and our made up peer AS (65001)'
+p "#  our made up autonomous system number (65002),"
+p "#  and our made up peer AS (65001)"
 pei "bat $DEMO_ROOT/instance/overlays/bgp/bgppeer.yaml"
 p
 
@@ -54,7 +55,7 @@ pei "oc get pods -l app=frr-k8s -n metallb-system -o jsonpath='{.items[*].status
 p
 
 p "# 🔍 here is the FRR config on the peer router"
-pei "bat -r 8: -l properties $DEMO_ROOT/instance/overlays/bgp/unifi-frr.cfg"
+pei "bat -r 8: -l properties $DEMO_ROOT/instance/overlays/bgp/unifi-frr.conf"
 sleep 3
 p "# 🔍 the neighbor IPs of our cluster frr pods are placed in a 'ocp-hub' peer-group (line 20)"
 p "#  the 'allow-ocp-hub' route-map is applied to announcements from this peer-group (line 33)"
@@ -66,22 +67,26 @@ pei "oc apply -k $DEMO_ROOT/example-app/overlays/bgp"
 p " 🔍 the app has a service of type loadbalancer"
 pei "oc kustomize $DEMO_ROOT/example-app | kfilt -k service | bat -l yaml"
 p
-p "# 💻 the service recieved the IP 192.168.179.224 from the pool we defined earlier"
-p "#  it is reachable because all the following works as expected 😄"
+
+SVC_IP=$(oc get svc/static -n metallb-app -o jsonpath='{.status.loadBalancer.ingress[].ip}')
+
+p "# 💻 the service recieved the IP $SVC_IP from the pool we defined earlier"
 pei "oc get svc -n metallb-app -o wide"
-pei "curl 192.168.179.224:8080/app/"
+p "#  it is reachable because all the following works as expected 😄"
+pei "curl ${SVC_IP}:8080/app/"
 p
 
 p "# 🔍 the cluster frr speakers should now announce to their peers that they are"
 p "#  next-hops to this IP and the BGP peer should accept and use these routes"
 p
 
-p "# 💻 now lets log into one of the frr pods and check the status"
+p "# 💻 now log into one of the frr pods and check the status"
 POD=$(oc get pods -l app=frr-k8s -n metallb-system -o jsonpath='{.items[0].metadata.name}')
 p "POD=\$(oc get pods -l app=frr-k8s -n metallb-system -o jsonpath='{.items[0].metadata.name}')"
 p "oc -n metallb-system -c frr rsh \$POD vtysh -c 'show ip bgp summary'"
 oc -n metallb-system -c frr rsh $POD vtysh -c 'show ip bgp summary'
-p "# 💡 notice to our neighbor we have 1 PfxSnt (prefix sent) ^"
+p "# 💡 notice to our neighbor we have a value for PfxSnt (prefix sent) ^"
+p "#  these should be visible on the router"
 p
 
 # copy demo script to Unifi router and continue demo there

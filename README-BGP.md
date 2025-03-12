@@ -2,7 +2,7 @@
 > [!IMPORTANT]
 > This is an example MetalLB configuration with BGP support. It is intentionally rather simple and could be enhanced by adding a password to the BGP peer relationships and it could be more responsive to topology changes by enabling BFD.
 
-[![asciicast](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP.svg)](https://asciinema.org/a/OJimzY6tlKYT8AexAVeBkp9eP)
+[![asciicast](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim.svg)](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim)
 
 # Enable BGP in MetalLB
 
