@@ -2,6 +2,9 @@
 > [!IMPORTANT]
 > This is an example MetalLB configuration with BGP support. It is intentionally rather simple and could be enhanced by adding a password to the BGP peer relationships and it could be more responsive to topology changes by enabling BFD.
 
+> [!WARNING]
+> Do not attempt to use a password when peering with a Unifi device. It lacks the necessary `tcp_md5sig` kernel module. [Here](https://github.com/fabianishere/udm-kernel-tools) is a tool which _may_ help.
+
 [![asciicast](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim.svg)](https://asciinema.org/a/B1Yvn6OyuIjtokNkwIgFabwim)
 
 # Enable BGP in MetalLB
