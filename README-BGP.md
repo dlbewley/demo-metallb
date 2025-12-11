@@ -1,6 +1,8 @@
 
 > [!IMPORTANT]
 > This is an example MetalLB configuration with BGP support. It is intentionally rather simple and could be enhanced by adding a password to the BGP peer relationships and it could be more responsive to topology changes by enabling BFD.
+>
+> If the BGP peer is not on the directly connected subnet (is more than 1 hop away) you must enable ebgpMultiHop https://metallb.io/concepts/bgp/index.html#limitations-of-the-frr-mode
 
 > [!WARNING]
 > Do not attempt to use a password when peering with a Unifi device. It lacks the necessary `tcp_md5sig` kernel module. [Here](https://github.com/fabianishere/udm-kernel-tools) is a tool which _may_ help.
@@ -30,7 +32,7 @@ spec:
     - 192.168.179.224-192.168.179.231
   autoAssign: true
   # ignore .0 and .255
-  avoidBuggyIPs: true 
+  avoidBuggyIPs: true
   # optional limitation on use of pool
   serviceAllocation:
     namespaces:
@@ -82,7 +84,7 @@ frr-k8s-nrhkz   6/6     Running   6               4d19h   192.168.4.195   hub-q7
 ```bash
 $ CLUSTER=ocp-hub
 $ for ip in $(oc get pods -l app=frr-k8s \
-    -n metallb-system -o jsonpath='{.items[*].status.podIP}'); do 
+    -n metallb-system -o jsonpath='{.items[*].status.podIP}'); do
     echo "neighbor $ip peer-group $CLUSTER";
   done
 
